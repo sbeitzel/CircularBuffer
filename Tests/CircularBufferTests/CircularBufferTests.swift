@@ -13,4 +13,12 @@ final class CircularBufferTests: XCTestCase {
         XCTAssertEqual(buffer[1], 3)
         XCTAssertEqual(buffer[2], 4)
     }
+
+    func testContains() throws {
+        var buffer = CircularBuffer<Int>(capacity: 5)
+        for number in 1..<6 { buffer.append(number) }
+        for number in 1..<6 {
+            XCTAssertTrue(buffer.contains(where: { $0 == number }))
+        }
+    }
 }
