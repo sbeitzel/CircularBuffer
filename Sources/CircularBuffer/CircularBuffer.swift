@@ -1,4 +1,4 @@
-public struct CircularBuffer<Element> {
+public struct CircularBuffer<Element>: Sequence {
     let capacity: Int
     var buffer: [Element]
     var insertionPoint: Int = 0
@@ -35,8 +35,27 @@ public struct CircularBuffer<Element> {
             buffer[realIndex] = newValue
         }
     }
-    
-    public func contains(where closure: (Element) throws -> Bool) rethrows -> Bool {
-        return try buffer.contains(where: closure)
+
+    public func makeIterator() -> some IteratorProtocol<Element> {
+        return CBIterator(self)
+    }
+
+    public struct CBIterator: IteratorProtocol {
+        private let buffer: CircularBuffer
+        private var nextIndex: Int
+
+        init(_ buffer: CircularBuffer) {
+            self.buffer = buffer
+            self.nextIndex = 0
+        }
+
+        public mutating func next() -> Element? {
+            if nextIndex > (buffer.count - 1) || nextIndex > (buffer.capacity - 1) {
+                return nil
+            } else {
+                defer { nextIndex += 1 }
+                return buffer[nextIndex]
+            }
+        }
     }
 }
